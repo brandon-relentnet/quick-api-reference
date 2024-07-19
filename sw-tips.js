@@ -1,7 +1,7 @@
 console.log("sw-tips.js")
 
 const updateTip = async () => {
-    const reponse = await fetch('https://extension-tips.glitch.me/tips.json');
+    const response = await fetch('https://extension-tips.glitch.me/tips.json');
     const tips = await response.json()
     const randomIndex = Math.floor(Math.random() * tips.length);
     return chrome.storage.local.set({ tip: tips[randomIndex] });
@@ -21,5 +21,12 @@ async function createAlarm() {
 }
 
 createAlarm();
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.greeting === 'tip') {
+        chrome.storage.local.get('tip').then(sendResponse);
+        return true;
+    }
+});
 
 chrome.alarms.onAlarm.addListener(updateTip);
